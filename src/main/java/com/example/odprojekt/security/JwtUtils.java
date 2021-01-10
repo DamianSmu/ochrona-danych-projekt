@@ -8,11 +8,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 public class JwtUtils {
 
-    private final int jwtExpirationMs = 7 * 24 * 60 * 60;
+    private final int jwtExpirationMs = 60 * 60 * 1000;
     //@Value("${jwt_secret}")
     private String jwtSecret = "ABCD";
 
@@ -21,6 +22,7 @@ public class JwtUtils {
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
 
         return Jwts.builder()
+                .setId(UUID.randomUUID().toString())
                 .setSubject((userPrincipal.getUsername()))
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))

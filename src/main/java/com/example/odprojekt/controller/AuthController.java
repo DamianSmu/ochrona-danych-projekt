@@ -18,6 +18,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.HashSet;
 import java.util.List;
@@ -41,19 +43,30 @@ public class AuthController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
+        String jwtClaims = jwt.substring(0, jwt.lastIndexOf("."));
+        String jwtSignature = jwt.substring(jwt.lastIndexOf("."));
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(new LoginResponse(jwt,
+        Cookie authCookie = new Cookie("authSignature", jwtSignature);
+        authCookie.setMaxAge(60*60);
+        //authCookie.setDomain("localhost");
+        authCookie.setPath("/");
+        //authCookie.setSecure(true);
+        //authCookie.setHttpOnly(true);
+        response.addCookie(authCookie);
+
+
+        return ResponseEntity.ok(new LoginResponse(jwtClaims,
                 userDetails.getId(),
                 userDetails.getUsername(),
                 userDetails.getEmail(),
@@ -68,32 +81,15 @@ public class AuthController {
                     .body(new MessageResponse("Użytkownik o podanej nazwie istnieje już w bazie."));
         }
 
+        Set<RoleEnum> roles = new HashSet<>();
+        roles.add(RoleEnum.USER);
         User user = new User(
-                signUpRequest.getFirstname(),
-                signUpRequest.getLastname(),
                 signUpRequest.getUsername(),
                 signUpRequest.getEmail(),
                 encoder.encode(signUpRequest.getPassword()),
-                signUpRequest.getAddress()
+                roles
         );
-        Set<String> strRoles = signUpRequest.getRoles();
-        Set<RoleEnum> roles = new HashSet<>();
 
-        if (strRoles == null) {
-            roles.add(RoleEnum.USER);
-        } else {
-            strRoles.forEach(role -> {
-                switch (role) {
-                    case "admin":
-                        roles.add(RoleEnum.ADMIN);
-                        break;
-                    case "user":
-                        roles.add(RoleEnum.USER);
-                        break;
-                }
-            });
-        }
-        user.setRoles(roles);
         userRepository.save(user);
 
         return ResponseEntity.ok(new MessageResponse("Użytkownik zarejestrowany pomyślnie!"));
