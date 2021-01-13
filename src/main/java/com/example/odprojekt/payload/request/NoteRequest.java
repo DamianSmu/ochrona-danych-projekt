@@ -1,7 +1,5 @@
 package com.example.odprojekt.payload.request;
 
-import javax.validation.constraints.NotNull;
-
 public class NoteRequest {
 
 

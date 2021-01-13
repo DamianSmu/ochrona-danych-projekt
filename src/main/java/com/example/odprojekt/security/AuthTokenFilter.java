@@ -31,7 +31,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        if (!request.getRequestURI().startsWith("/api/auth")) {
+        if (request.getRequestURI().startsWith("/api") && !request.getRequestURI().startsWith("/api/auth")) {
             try {
                 String jwt = parseJwt(request);
                 if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
@@ -57,7 +57,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 .findFirst()
                 .map(Cookie::getValue)
                 .orElse(null);
-
         if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ") && cookie != null) {
             String jwtClaims =  headerAuth.substring(7);
             return jwtClaims.concat(cookie);

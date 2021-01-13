@@ -35,3 +35,6 @@ build/
 .env
 
 todo.txt
+
+*.jks
+*.p12

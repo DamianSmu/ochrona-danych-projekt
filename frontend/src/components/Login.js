@@ -2,18 +2,9 @@ import React, { useState, useRef } from "react";
 import Form from "react-validation/build/form";
 import Input from "react-validation/build/input";
 import CheckButton from "react-validation/build/button";
-
+import {required} from "./Validations"
 import AuthService from "../services/auth.service";
-
-const required = (value) => {
-  if (!value) {
-    return (
-      <div className="alert alert-danger" role="alert">
-        This field is required!
-      </div>
-    );
-  }
-};
+import {Link} from "react-router-dom";
 
 const Login = (props) => {
   const form = useRef();
@@ -92,6 +83,12 @@ const Login = (props) => {
               onChange={onChangePassword}
               validations={[required]}
             />
+          </div>
+
+          <div className="form-group">
+            <Link to={"/requestForResetPassword"}>
+              Reset password
+            </Link>
           </div>
 
           <div className="form-group">

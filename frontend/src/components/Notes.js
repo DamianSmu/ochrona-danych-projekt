@@ -1,32 +1,48 @@
-import React, { useState, useEffect } from "react";
+import React, {useEffect, useState} from "react";
+import NoteService from "../services/note.service"
+import NoteForm from "./NoteForm";
+import Note from "./Note";
 
 
-const Notes = () => {
-  const [content, setContent] = useState("");
+const Notes = ({isPublic, username}) => {
+    const [content, setContent] = useState("");
+    const [updated, setUpdated] = useState(false);
 
-  useEffect(() => {
-    // UserService.getPublicContent().then(
-    //   (response) => {
-    //     setContent(response.data);
-    //   },
-    //   (error) => {
-    //     const _content =
-    //       (error.response && error.response.data) ||
-    //       error.message ||
-    //       error.toString();
-    //
-    //     setContent(_content);
-    //   }
-    // );
-  }, []);
+    const deleteNote = (isPublic, id) => {
+        NoteService.deleteNote(isPublic, id);
+        setUpdated(true)
+    }
 
-  return (
-    <div className="container">
-      <header className="jumbotron">
-        {/*<h3>{content}</h3>*/}
-      </header>
-    </div>
-  );
+    useEffect(() => {
+        NoteService.getAll(isPublic).then(
+            (response) => {
+                setContent(response.data);
+                setUpdated(false)
+            },
+            (error) => {
+                const _content =
+                    (error.response && error.response.data) ||
+                    error.message ||
+                    error.toString();
+                setContent(_content);
+                setUpdated(false)
+            }
+        );
+    },[updated])
+
+    return (
+        <div className="container">
+            <header className="jumbotron">
+                <h4>Your {isPublic ? "public" : "private"} notes:</h4>
+                {content.length > 0 && (
+                    content.map((item, i) => (
+                        <Note item={item.id} user={item.user.username} body={item.body} canDelete={username === item.user.username} onDelete={() => deleteNote(isPublic, item.id)} key={i}/>
+                    ))
+                )}
+            </header>
+            <NoteForm onAdd={()=> setUpdated(true)}/>
+        </div>
+    );
 };
 
 export default Notes;

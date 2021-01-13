@@ -2,9 +2,10 @@ package com.example.odprojekt.entity;
 
 
 import com.example.odprojekt.security.RoleEnum;
-import lombok.Data;
-import lombok.Generated;
-import lombok.RequiredArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -15,13 +16,13 @@ import java.util.*;
 public class User implements Serializable {
 
     @Id
-    @Generated
     private String id = UUID.randomUUID().toString();
     @NotNull
     private String username;
     @NotNull
     private String email;
     @NotNull
+    @JsonIgnore
     private String password;
 
     @ElementCollection(targetClass = RoleEnum.class)
@@ -30,8 +31,12 @@ public class User implements Serializable {
     @Column(name = "role")
     private Set<RoleEnum> roles = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY)
-    private List<Note> parcels = new ArrayList<>();
+    @JsonBackReference
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    private List<Note> notes = new ArrayList<>();
+    @JsonBackReference
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    private List<PublicNote> publicNotes = new ArrayList<>();
 
 
     public User(@NotNull String username, @NotNull String email, @NotNull String password, Set<RoleEnum> roles) {
@@ -82,6 +87,22 @@ public class User implements Serializable {
 
     public void setRoles(Set<RoleEnum> roles) {
         this.roles = roles;
+    }
+
+    public List<Note> getNotes() {
+        return notes;
+    }
+
+    public void setNotes(List<Note> notes) {
+        this.notes = notes;
+    }
+
+    public List<PublicNote> getPublicNotes() {
+        return publicNotes;
+    }
+
+    public void setPublicNotes(List<PublicNote> publicNotes) {
+        this.publicNotes = publicNotes;
     }
 
     @Override

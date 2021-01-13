@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 @Entity
-public class Note {
+public class PublicNote {
 
     @Id
     private String id = UUID.randomUUID().toString();
@@ -20,12 +20,12 @@ public class Note {
     @NotNull
     private String body;
 
-    public Note(@NotNull User user, @NotNull String body) {
+    public PublicNote(@NotNull User user, @NotNull String body) {
         this.user = user;
         this.body = body;
     }
 
-    public Note() {
+    public PublicNote() {
     }
 
     public User getUser() {
