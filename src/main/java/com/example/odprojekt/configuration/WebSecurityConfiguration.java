@@ -62,11 +62,6 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
-
-        http.requiresChannel()
-            .anyRequest()
-            .requiresSecure();
-
     }
 
     @Override

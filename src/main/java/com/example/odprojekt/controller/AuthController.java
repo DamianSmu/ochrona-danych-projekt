@@ -78,7 +78,7 @@ public class AuthController {
             authCookie.setMaxAge(60 * 60 * 1000);
             //authCookie.setDomain(domain);
             authCookie.setPath("/api");
-            authCookie.setSecure(true);
+            //authCookie.setSecure(true);
             authCookie.setHttpOnly(true);
             response.addCookie(authCookie);
 

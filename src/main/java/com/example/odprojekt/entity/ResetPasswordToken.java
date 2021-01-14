@@ -18,7 +18,7 @@ public class ResetPasswordToken {
     private String user_id;
     private Date expDate;
 
-    private static final String FRONTEND_URL = "https://localhost:9090";
+    private static final String FRONTEND_URL = "http://od-damian-smugorzewski-client.herokuapp.com";
 
     public ResetPasswordToken(@NotNull String user_id) {
         this.user_id = user_id;

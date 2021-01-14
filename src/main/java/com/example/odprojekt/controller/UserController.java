@@ -35,11 +35,11 @@ public class UserController {
     }
 
     @PostMapping("/changePassword")
-    public ResponseEntity<?> resetPassword(@RequestBody ChangePasswordRequest changePasswordRequest, Authentication authentication) {
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest, Authentication authentication) {
         String oldPassword = changePasswordRequest.getOldPassword();
         String newPassword = changePasswordRequest.getNewPassword();
         User user = userRepository.findByUsername(authentication.getName()).get();
-        if(!user.getPassword().equals(encoder.encode(oldPassword))){
+        if(!encoder.matches(oldPassword, user.getPassword())){
             return ResponseEntity.badRequest().body(new MessageResponse("Old password incorrect"));
         }
         user.setPassword(encoder.encode(newPassword));
