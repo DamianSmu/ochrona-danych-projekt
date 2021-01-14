@@ -57,7 +57,8 @@ public class AuthController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) throws InterruptedException {
+        Thread.sleep(200);
         Authentication authentication;
         try {
             authentication = authenticationManager.authenticate(

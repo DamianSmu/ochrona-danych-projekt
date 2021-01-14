@@ -37,11 +37,4 @@ public class OdprojektApplication {
 
 		};
 	}
-
-//	@Bean
-//	public CookieSerializer cookieSerializer() {
-//		DefaultCookieSerializer cookieSerializer = new DefaultCookieSerializer();
-//		cookieSerializer.setSameSite("None");
-//		return cookieSerializer;
-//	}
 }
