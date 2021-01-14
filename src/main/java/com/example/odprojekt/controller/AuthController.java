@@ -23,6 +23,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseCookie;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -78,7 +79,7 @@ public class AuthController {
             authCookie.setMaxAge(60 * 60 * 1000);
             //authCookie.setDomain(domain);
             authCookie.setPath("/api");
-            //authCookie.setSecure(true);
+            authCookie.setSecure(true);
             authCookie.setHttpOnly(true);
             response.addCookie(authCookie);
 
