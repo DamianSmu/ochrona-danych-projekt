@@ -25,4 +25,5 @@ public class WebConfiguration implements WebMvcConfigurer {
             cookieProcessor.setSameSiteCookies(SameSiteCookies.NONE.getValue());
             context.setCookieProcessor(cookieProcessor);
         };
+    }
 }
