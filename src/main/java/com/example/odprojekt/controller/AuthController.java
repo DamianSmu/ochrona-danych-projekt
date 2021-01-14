@@ -95,7 +95,13 @@ public class AuthController {
         if (userRepository.findByUsername(signUpRequest.getUsername()).isPresent()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Użytkownik o podanej nazwie istnieje już w bazie."));
+                    .body(new MessageResponse("Username is taken."));
+        }
+
+        if (userRepository.findByEmail(signUpRequest.getEmail()).isPresent()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Email is taken."));
         }
 
         Set<RoleEnum> roles = new HashSet<>();
@@ -107,7 +113,7 @@ public class AuthController {
                 roles
         );
         userRepository.save(user);
-        return ResponseEntity.ok(new MessageResponse("Użytkownik zarejestrowany pomyślnie!"));
+        return ResponseEntity.ok(new MessageResponse("User was registered successfully"));
     }
 
     @GetMapping("/check/{login}")
