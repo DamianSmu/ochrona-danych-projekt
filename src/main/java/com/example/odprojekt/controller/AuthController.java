@@ -13,6 +13,7 @@ import com.example.odprojekt.repository.UserRepository;
 import com.example.odprojekt.security.JwtUtils;
 import com.example.odprojekt.security.RoleEnum;
 import com.example.odprojekt.security.UserDetailsImpl;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -38,6 +39,9 @@ public class AuthController {
     private final PasswordEncoder encoder;
     private final JwtUtils jwtUtils;
     private final ResetPasswordTokenRepository resetPasswordTokenRepository;
+
+    @Value("${domain}")
+    private String domain;
 
     public AuthController(AuthenticationManager authenticationManager,
                           UserRepository userRepository,
@@ -72,10 +76,10 @@ public class AuthController {
 
             Cookie authCookie = new Cookie("authSignature", jwtSignature);
             authCookie.setMaxAge(60 * 60 * 1000);
-            authCookie.setDomain("localhost");
+            authCookie.setDomain(domain);
             authCookie.setPath("/api");
-            //authCookie.setSecure(true);
-            //authCookie.setHttpOnly(true);
+            authCookie.setSecure(true);
+            authCookie.setHttpOnly(true);
             response.addCookie(authCookie);
 
         return ResponseEntity.ok(new LoginResponse(jwtClaims,
