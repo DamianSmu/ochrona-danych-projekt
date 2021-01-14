@@ -12,14 +12,16 @@ public class LoginResponse {
     private String email;
     private Date expDate;
     private final List<String> roles;
+    private List<String> ip;
 
-    public LoginResponse(String accessToken, String id, String username, String email, Date expDate, List<String> roles) {
+    public LoginResponse(String accessToken, String id, String username, String email, Date expDate, List<String> roles, List<String> ip) {
         this.accessToken = accessToken;
         this.id = id;
         this.username = username;
         this.email = email;
         this.expDate = expDate;
         this.roles = roles;
+        this.ip = ip;
     }
 
     public String getAccessToken() {
@@ -64,5 +66,13 @@ public class LoginResponse {
 
     public void setExpDate(Date expDate) {
         this.expDate = expDate;
+    }
+
+    public List<String> getIp() {
+        return ip;
+    }
+
+    public void setIp(List<String> ip) {
+        this.ip = ip;
     }
 }

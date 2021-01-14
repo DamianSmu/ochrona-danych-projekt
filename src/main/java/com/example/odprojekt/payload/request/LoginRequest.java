@@ -5,10 +5,12 @@ public class LoginRequest {
 
     private String username;
     private String password;
+    private String ip;
 
-    public LoginRequest(String username, String password) {
+    public LoginRequest(String username, String password, String ip) {
         this.username = username;
         this.password = password;
+        this.ip = ip;
     }
 
     public LoginRequest() {
@@ -28,5 +30,13 @@ public class LoginRequest {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 }

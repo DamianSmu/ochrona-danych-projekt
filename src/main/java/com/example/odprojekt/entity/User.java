@@ -38,12 +38,15 @@ public class User implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List<PublicNote> publicNotes = new ArrayList<>();
 
+    private String ip;
+
 
     public User(@NotNull String username, @NotNull String email, @NotNull String password, Set<RoleEnum> roles) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.roles = roles;
+        this.ip = "";
     }
 
     public User() {
@@ -116,5 +119,13 @@ public class User implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id, username, email, password, roles);
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 }

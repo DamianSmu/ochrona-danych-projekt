@@ -75,20 +75,24 @@ public class AuthController {
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.toList());
 
+            User user = userRepository.findByUsername(userDetails.getUsername()).get();
+            user.setIp(user.getIp() + loginRequest.getIp() + ";");
+            userRepository.save(user);
+
             Cookie authCookie = new Cookie("authSignature", jwtSignature);
-            authCookie.setMaxAge(60 * 60 * 1000);
-            //authCookie.setDomain(domain);
+            authCookie.setMaxAge(60 * 60);
             authCookie.setPath("/api");
             authCookie.setSecure(true);
             authCookie.setHttpOnly(true);
             response.addCookie(authCookie);
+
 
         return ResponseEntity.ok(new LoginResponse(jwtClaims,
                 userDetails.getId(),
                 userDetails.getUsername(),
                 userDetails.getEmail(),
                 new Date(new Date().getTime() + 60 * 60 * 1000),
-                roles));
+                roles, Arrays.asList(user.getIp().split(";"))));
     }
 
     @PostMapping("/signup")
