@@ -1,5 +1,7 @@
 package com.example.odprojekt.security;
 
+import com.example.odprojekt.entity.BlockedToken;
+import com.example.odprojekt.repository.BlockedTokensRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,16 +18,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 @Component
 public class AuthTokenFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
     private final UserDetailsServiceImpl userDetailsService;
+    private final BlockedTokensRepository blockedTokensRepository;
 
-    public AuthTokenFilter(JwtUtils jwtUtils, UserDetailsServiceImpl userDetailsService) {
+    public AuthTokenFilter(JwtUtils jwtUtils, UserDetailsServiceImpl userDetailsService, BlockedTokensRepository blockedTokensRepository) {
         this.jwtUtils = jwtUtils;
         this.userDetailsService = userDetailsService;
+        this.blockedTokensRepository = blockedTokensRepository;
     }
 
     @Override
@@ -36,6 +42,13 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 String jwt = parseJwt(request);
                 if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
                     String username = jwtUtils.getUserNameFromJwtToken(jwt);
+
+                    Date date = jwtUtils.getDateFromToken(jwt);
+                    List<BlockedToken> tokens = blockedTokensRepository.findByUsernameAndDateAfter(username, date);
+
+                    if(!tokens.isEmpty()){
+                        throw new RuntimeException("Token blocked");
+                    }
 
                     UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null,

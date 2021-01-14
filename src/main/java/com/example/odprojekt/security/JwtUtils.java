@@ -14,8 +14,7 @@ import java.util.UUID;
 public class JwtUtils {
 
     private final int jwtExpirationMs = 60 * 60 * 1000;
-    //@Value("${jwt_secret}")
-    private String jwtSecret = "ABCD";
+    private String jwtSecret = "OchronaDanychDamianSmugorzewski2021";
 
     public String generateJwtToken(Authentication authentication) {
 
@@ -32,6 +31,10 @@ public class JwtUtils {
 
     public String getUserNameFromJwtToken(String token) {
         return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
+    }
+
+    public Date getDateFromToken(String token) {
+        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getIssuedAt();
     }
 
     public boolean validateJwtToken(String authToken) {
