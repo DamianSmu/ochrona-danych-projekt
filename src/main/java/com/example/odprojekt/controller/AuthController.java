@@ -76,7 +76,7 @@ public class AuthController {
 
             Cookie authCookie = new Cookie("authSignature", jwtSignature);
             authCookie.setMaxAge(60 * 60 * 1000);
-            authCookie.setDomain(domain);
+            //authCookie.setDomain(domain);
             authCookie.setPath("/api");
             authCookie.setSecure(true);
             authCookie.setHttpOnly(true);
