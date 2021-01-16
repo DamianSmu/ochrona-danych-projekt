@@ -41,8 +41,6 @@ public class AuthController {
     private final JwtUtils jwtUtils;
     private final ResetPasswordTokenRepository resetPasswordTokenRepository;
 
-    @Value("${domain}")
-    private String domain;
 
     public AuthController(AuthenticationManager authenticationManager,
                           UserRepository userRepository,

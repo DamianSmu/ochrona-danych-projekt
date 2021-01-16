@@ -38,3 +38,5 @@ todo.txt
 
 *.jks
 *.p12
+frontend/node_modules/
+*.eslintcache
