@@ -15,26 +15,26 @@ import java.util.Set;
 @SpringBootApplication
 public class OdprojektApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(OdprojektApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(OdprojektApplication.class, args);
+    }
 
-	@Bean
-	CommandLineRunner initDatabase(UserRepository userRepository, PasswordEncoder encoder) {
+    @Bean
+    CommandLineRunner initDatabase(UserRepository userRepository, PasswordEncoder encoder) {
 
-		return args -> {
-			if (!userRepository.findByUsername("damian").isPresent()) {
-				Set<RoleEnum> roles = new HashSet<>();
-				roles.add(RoleEnum.USER);
-				User user = new User(
-						"damian",
-						"damian@damian.pl",
-						encoder.encode("password123"),
-						roles
-				);
-				userRepository.save(user);
-			}
+        return args -> {
+            if (!userRepository.findByUsername("damian").isPresent()) {
+                Set<RoleEnum> roles = new HashSet<>();
+                roles.add(RoleEnum.USER);
+                User user = new User(
+                        "damian",
+                        "damian@damian.pl",
+                        encoder.encode("123!@#qweQWE"),
+                        roles
+                );
+                userRepository.save(user);
+            }
 
-		};
-	}
+        };
+    }
 }

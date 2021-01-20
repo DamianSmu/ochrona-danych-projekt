@@ -4,8 +4,6 @@ package com.example.odprojekt.entity;
 import com.example.odprojekt.security.RoleEnum;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -24,6 +22,12 @@ public class User implements Serializable {
     @NotNull
     @JsonIgnore
     private String password;
+
+    @JsonIgnore
+    private int badLogin = 0;
+
+    @JsonIgnore
+    private Date lastLoginAttempt;
 
     @ElementCollection(targetClass = RoleEnum.class)
     @Enumerated(EnumType.STRING)
@@ -127,5 +131,25 @@ public class User implements Serializable {
 
     public void setIp(String ip) {
         this.ip = ip;
+    }
+
+    public int getBadLogin() {
+        return badLogin;
+    }
+
+    public void setBadLogin(int badLogin) {
+        this.badLogin = badLogin;
+    }
+
+    public void incrementBadLogin() {
+        this.badLogin++;
+    }
+
+    public Date getLastLoginAttempt() {
+        return lastLoginAttempt;
+    }
+
+    public void setLastLoginAttempt(Date lastLoginAttempt) {
+        this.lastLoginAttempt = lastLoginAttempt;
     }
 }

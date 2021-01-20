@@ -49,6 +49,11 @@ const resetPasswordRequest = (email) => {
 
 const logout = () => {
     localStorage.removeItem("user");
+    return axios
+        .get("/api/auth/logout", {withCredentials: true })
+        .then((response) => {
+            return response;
+        });
 };
 
 const getCurrentUser = () => {

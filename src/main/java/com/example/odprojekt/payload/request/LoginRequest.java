@@ -1,9 +1,13 @@
 package com.example.odprojekt.payload.request;
 
 
+import javax.validation.constraints.Size;
+
 public class LoginRequest {
 
+    @Size(min = 1, max = 1000)
     private String username;
+    @Size(min = 1, max = 1000)
     private String password;
     private String ip;
 

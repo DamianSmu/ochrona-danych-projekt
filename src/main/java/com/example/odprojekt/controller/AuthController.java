@@ -13,7 +13,6 @@ import com.example.odprojekt.repository.UserRepository;
 import com.example.odprojekt.security.JwtUtils;
 import com.example.odprojekt.security.RoleEnum;
 import com.example.odprojekt.security.UserDetailsImpl;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -23,7 +22,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.ResponseCookie;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -57,33 +55,47 @@ public class AuthController {
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) throws InterruptedException {
         Thread.sleep(200);
+
+        Optional<User> preUser = userRepository.findByUsername(loginRequest.getUsername());
+
+        if (preUser.isPresent() && preUser.get().getBadLogin() >= 5) {
+            if (preUser.get().getLastLoginAttempt() != null &&
+                    new Date(new Date().getTime()).before(new Date(preUser.get().getLastLoginAttempt().getTime() + 60 * 1000))) {
+                return ResponseEntity.status(401).body(new MessageResponse("Too many bad logins attempts."));
+            }
+        }
+
         Authentication authentication;
         try {
             authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
         } catch (BadCredentialsException e) {
+            preUser.ifPresent(User::incrementBadLogin);
+            preUser.ifPresent(user -> user.setLastLoginAttempt(new Date(new Date().getTime())));
+            preUser.ifPresent(userRepository::save);
             return ResponseEntity.status(401).body(new MessageResponse("Bad credentials"));
         }
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            String jwt = jwtUtils.generateJwtToken(authentication);
-            String jwtClaims = jwt.substring(0, jwt.lastIndexOf("."));
-            String jwtSignature = jwt.substring(jwt.lastIndexOf("."));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtUtils.generateJwtToken(authentication);
+        String jwtClaims = jwt.substring(0, jwt.lastIndexOf("."));
+        String jwtSignature = jwt.substring(jwt.lastIndexOf("."));
 
-            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-            List<String> roles = userDetails.getAuthorities().stream()
-                    .map(GrantedAuthority::getAuthority)
-                    .collect(Collectors.toList());
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
 
-            User user = userRepository.findByUsername(userDetails.getUsername()).get();
-            user.setIp(user.getIp() + loginRequest.getIp() + ";");
-            userRepository.save(user);
+        User user = userRepository.findByUsername(userDetails.getUsername()).get();
+        user.setIp(user.getIp() + loginRequest.getIp() + "\t" + new Date(new Date().getTime()).toString() + ";");
+        user.setBadLogin(0);
+        userRepository.save(user);
 
-            Cookie authCookie = new Cookie("authSignature", jwtSignature);
-            authCookie.setMaxAge(60 * 60);
-            authCookie.setPath("/api");
-            authCookie.setSecure(true);
-            authCookie.setHttpOnly(true);
-            response.addCookie(authCookie);
+        Cookie authCookie = new Cookie("authSignature", jwtSignature);
+        authCookie.setMaxAge(60 * 60);
+        authCookie.setPath("/api");
+        authCookie.setSecure(true);
+        authCookie.setHttpOnly(true);
+        response.addCookie(authCookie);
 
 
         return ResponseEntity.ok(new LoginResponse(jwtClaims,
@@ -150,5 +162,16 @@ public class AuthController {
             return ResponseEntity.ok(new MessageResponse("Password was reset successfully"));
         }
         return ResponseEntity.badRequest().body(new MessageResponse("Cannot reset password"));
+    }
+
+    @GetMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        Cookie authCookie = new Cookie("authSignature", "");
+        authCookie.setMaxAge(0);
+        authCookie.setPath("/api");
+        authCookie.setSecure(true);
+        authCookie.setHttpOnly(true);
+        response.addCookie(authCookie);
+        return ResponseEntity.ok(new MessageResponse("Logout success"));
     }
 }

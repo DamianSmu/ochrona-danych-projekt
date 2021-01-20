@@ -2,7 +2,6 @@ package com.example.odprojekt.security;
 
 import com.example.odprojekt.entity.BlockedToken;
 import com.example.odprojekt.repository.BlockedTokensRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -46,7 +45,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                     Date date = jwtUtils.getDateFromToken(jwt);
                     List<BlockedToken> tokens = blockedTokensRepository.findByUsernameAndDateAfter(username, date);
 
-                    if(!tokens.isEmpty()){
+                    if (!tokens.isEmpty()) {
                         throw new RuntimeException("Token blocked");
                     }
 
@@ -71,7 +70,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 .map(Cookie::getValue)
                 .orElse(null);
         if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ") && cookie != null) {
-            String jwtClaims =  headerAuth.substring(7);
+            String jwtClaims = headerAuth.substring(7);
             return jwtClaims.concat(cookie);
         }
         return null;

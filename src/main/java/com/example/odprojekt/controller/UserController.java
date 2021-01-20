@@ -38,13 +38,14 @@ public class UserController {
         String oldPassword = changePasswordRequest.getOldPassword();
         String newPassword = changePasswordRequest.getNewPassword();
         User user = userRepository.findByUsername(authentication.getName()).get();
-        if(!encoder.matches(oldPassword, user.getPassword())){
+        if (!encoder.matches(oldPassword, user.getPassword())) {
             return ResponseEntity.badRequest().body(new MessageResponse("Old password incorrect"));
         }
         user.setPassword(encoder.encode(newPassword));
         userRepository.save(user);
         return ResponseEntity.ok(new MessageResponse("Password was reset successfully"));
     }
+
     @GetMapping("/logoutAll")
     public ResponseEntity<?> logoutAll(Authentication authentication) {
         blockedTokensRepository.save(new BlockedToken(authentication.getName()));

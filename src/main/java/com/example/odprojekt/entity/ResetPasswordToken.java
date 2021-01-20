@@ -1,7 +1,5 @@
 package com.example.odprojekt.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
@@ -12,13 +10,12 @@ import java.util.UUID;
 @Entity
 public class ResetPasswordToken {
 
+    private static final String FRONTEND_URL = "https://localhost:8443";
     @Id
     private String id = UUID.randomUUID().toString();
     @NotNull
     private String user_id;
     private Date expDate;
-
-    private static final String FRONTEND_URL = "https://od-damian-smugorzewski-client.herokuapp.com";
 
     public ResetPasswordToken(@NotNull String user_id) {
         this.user_id = user_id;
@@ -56,7 +53,7 @@ public class ResetPasswordToken {
         this.expDate = expDate;
     }
 
-    public String generateLink(){
+    public String generateLink() {
         return FRONTEND_URL + "/resetPassword?token=" + this.id;
     }
 }

@@ -6,12 +6,12 @@ import java.util.List;
 
 public class LoginResponse {
 
+    private final List<String> roles;
     private String accessToken;
     private String id;
     private String username;
     private String email;
     private Date expDate;
-    private final List<String> roles;
     private List<String> ip;
 
     public LoginResponse(String accessToken, String id, String username, String email, Date expDate, List<String> roles, List<String> ip) {

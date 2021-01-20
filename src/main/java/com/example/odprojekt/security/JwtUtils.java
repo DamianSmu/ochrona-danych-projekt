@@ -14,7 +14,8 @@ import java.util.UUID;
 public class JwtUtils {
 
     private final int jwtExpirationMs = 60 * 60 * 1000;
-    private String jwtSecret = "OchronaDanychDamianSmugorzewski2021";
+    @Value("jwtSecret")
+    private String jwtSecret;
 
     public String generateJwtToken(Authentication authentication) {
 

@@ -12,11 +12,12 @@ import ResetPassword from "./components/ResetPassword";
 import RequestForResetPassword from "./components/RequestForResetPassword";
 import PublicNotes from "./components/PublicNotes";
 import PrivateNotes from "./components/PrivateNotes";
+import {useHistory} from "react-router";
 
 
 const App = () => {
     const [currentUser, setCurrentUser] = useState(undefined);
-
+    const history = useHistory();
     useEffect(() => {
         const user = AuthService.getCurrentUser();
         if (user) {
@@ -25,7 +26,7 @@ const App = () => {
     }, []);
 
     const logOut = () => {
-        AuthService.logout();
+        AuthService.logout().then(() => {history.push("/login")});
     };
 
     return (
@@ -55,7 +56,7 @@ const App = () => {
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <a href={"/login"} className="nav-link" onClick={logOut}>
+                            <a className="nav-link" onClick={logOut}>
                                 Logout
                             </a>
                         </li>
